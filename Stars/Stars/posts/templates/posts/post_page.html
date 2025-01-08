@@ -5,12 +5,47 @@
 {% endblock title %}
 
 {% block content %}
-    <section>
-        <img class="banner"
-        src="{{post.banner.url}}" 
-        alt="{{post.title}}">
-        <h1>{{ post.title }}</h1>
-        <p>{{ post.date }}</p>
-        <p>{{ post.body }}</p>
-    </section>
+<section>
+    <img class="banner"
+    src="{{ post.banner.url }}" 
+    alt="{{ post.title }}">
+    
+    <h1>{{ post.title }}</h1>
+    <p>Published on: {{ post.date }}</p>
+    <p>{{ post.body }}</p>
+    
+    <p>Average Rating: {{ post.average_rating|default:0|floatformat:1 }} ⭐</p>
+</section>
 {% endblock content %}
+
+{% block comments %}
+<h2>Comments</h2>
+{% if comments %}
+    <ul>
+        {% for comment in comments %}
+            <li>
+                <p><strong>{{ comment.name }} ({{ comment.date }})</strong></p>
+                <p>{{ comment.body }}</p>
+                <p>Rating: 
+                    {% for star in range %}
+                        {% if forloop.counter <= comment.rating %}
+                            ⭐
+                        {% else %}
+                            ☆
+                        {% endif %}
+                    {% endfor %}
+                </p>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No comments yet. Be the first to comment!</p>
+{% endif %}
+
+<h2>Leave a Comment</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+</form>
+{% endblock comments %}
